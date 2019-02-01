@@ -50,9 +50,15 @@
 #include <Inventor/nodes/SoText3.h>
 #include <Inventor/sensors/SoFieldSensor.h>
 #include <Inventor/fields/SoField.h>
+#include <Inventor/nodes/SoVertexProperty.h>
+#include <Inventor/nodes/SoLineSet.h>
 
 SoTranslation *mainTranslation;
 SoText3 *myText;
+int count = 0;
+
+SoVertexProperty* vprop;
+SoLineSet* myLineSet;
 
 static void setText(void *, SoSensor *s)
 {
@@ -64,7 +70,13 @@ static void setText(void *, SoSensor *s)
 	sprintf(tmpStr, "%f, %f", vecteur[0], vecteur[2]);
 	myText->string = tmpStr;
 	
+	//On ajoute des coordonnées au tableau
+	vprop->vertex.set1Value(count, vecteur);
+	count++;
 
+	//Tracé
+	myLineSet->numVertices.set1Value(0, count);
+	myLineSet->vertexProperty.setValue(vprop);
 }
 
 int
@@ -80,6 +92,11 @@ main(int, char **argv)
   SoSeparator *pRoot = new SoSeparator();
 
   pRoot->ref();
+
+
+  vprop = new SoVertexProperty();
+  myLineSet = new SoLineSet();
+  pRoot->addChild(myLineSet);
 
 
   mainTranslation = new SoTranslation;
